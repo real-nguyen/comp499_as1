@@ -55,6 +55,14 @@ def imgRootSquaredDifference(img1, img2, colour):
                 print('error')
     return newImg
 
+# TODO: REDO EVERYTHING
+# 1. Load mosaic image
+# 2. Create the 3 colour channel masks according to pattern
+# 3. Multiply the mosaic image with the masks -> extract output into variable
+# 4. Design kernel to get nearest neighbour averages
+# 5. Apply filter2D w/ kernel to outputs from step 3 -> extract each output to variable
+# 6. Merge outputs from step 5 -> get demosaiced image
+# 7. Calculate root square difference of *original* image with demosaiced image -> get artifacts
 r_img = getColourChannelMask(img.copy(), RED)
 g_img = getColourChannelMask(img.copy(), GREEN)
 b_img = getColourChannelMask(img.copy(), BLUE)
