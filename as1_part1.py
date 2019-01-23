@@ -65,7 +65,7 @@ g_mult = img_mosaic * g_mask
 r_mult = img_mosaic * r_mask
 
 # Get average of 2 or 4 nearest neighbours
-# Blue and green channels share the same kernel
+# Blue and green channels share the same kernel since they essentially have the same pattern
 bg_kernel = np.array([[0.25, 0.5, 0.25], [0.5, 1, 0.5], [0.25, 0.5, 0.25]])
 r_kernel = np.array([[0, 0.25, 0], [0.25, 1, 0.25], [0, 0.25, 0]])
 
@@ -80,6 +80,10 @@ cv2.imshow('img_mosaic', img_mosaic)
 cv2.imshow('img_original', img_original)
 cv2.imshow('img_demosaic', img_demosaic)
 
+# The root squared difference of the images will create artifacts
+# Because the demosaiced image is a reconstruction of the original image based on a mosaic image,
+# It is bound to not be 100% accurate
+# As such, information loss occurs and visual artifacts appear
 diff = imgRootSquaredDifference(img_original, img_demosaic)
 cv2.imshow('diff', diff)
 cv2.waitKey(0)
