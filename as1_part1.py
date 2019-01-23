@@ -8,15 +8,15 @@ import math
 dirname = os.path.dirname(__file__)
 imageSetDir = os.path.join(dirname, 'image_set')
 filename = os.path.join(imageSetDir, 'crayons_mosaic.bmp')
-img = cv2.imread(filename)
-img_Y = img.shape[0]
-img_X = img.shape[1]
+img_mosaic = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+img_rows = img_mosaic.shape[0]
+img_cols = img_mosaic.shape[1]
 BLUE = 0
 GREEN = 1
 RED = 2
 
-def createColourMask(x, y, colour):
-    mask = np.zeros((x, y), dtype=np.float32)
+def createColourMask(rows, cols, colour):
+    mask = np.zeros((rows, cols), dtype=np.float32)
     # indexing = start:end:step
     # 1::2 = start at index 1, go until end, steps of 2
     # ::2 = start at index 0, go until end, steps of 2
@@ -50,22 +50,26 @@ def imgRootSquaredDifference(img1, img2, colour):
 # TODO: REDO EVERYTHING
 # ~~1. Load mosaic image~~ DONE
 # ~~2. Create the 3 colour channel masks according to pattern~~ DONE
-# 3. Multiply the mosaic image with the masks -> extract output into variable
+# ~~3. Multiply the mosaic image with the masks -> extract output into variable~~ DONE
 # 4. Design kernel to get nearest neighbour averages
 # 5. Apply filter2D w/ kernel to outputs from step 3 -> extract each output to variable
 # 6. Merge outputs from step 5 -> get demosaiced image
 # 7. Calculate root square difference of *original* image with demosaiced image -> get artifacts
-b_mask = createColourMask(img_X, img_Y, BLUE)
-g_mask = createColourMask(img_X, img_Y, GREEN)
-r_mask = createColourMask(img_X, img_Y, RED)
+b_mask = createColourMask(img_rows, img_cols, BLUE)
+g_mask = createColourMask(img_rows, img_cols, GREEN)
+r_mask = createColourMask(img_rows, img_cols, RED)
+
+b_mult = img_mosaic * b_mask
+g_mult = img_mosaic * g_mask
+r_mult = img_mosaic * r_mask
 
 
-# cv2.imshow('img', img)
-# cv2.imshow('dst', dst)
+
 
 # # Difference between original and demosaiced images
 # diff = img - dst
 # cv2.imshow('diff', diff)
 
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+cv2.imshow('img_mosaic', img_mosaic)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
