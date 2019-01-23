@@ -51,8 +51,8 @@ def imgRootSquaredDifference(img1, img2, colour):
 # ~~1. Load mosaic image~~ DONE
 # ~~2. Create the 3 colour channel masks according to pattern~~ DONE
 # ~~3. Multiply the mosaic image with the masks -> extract output into variable~~ DONE
-# 4. Design kernel to get nearest neighbour averages
-# 5. Apply filter2D w/ kernel to outputs from step 3 -> extract each output to variable
+# ~~4. Design kernel to get nearest neighbour averages~~ DONE
+# ~~5. Apply filter2D w/ kernel to outputs from step 3 -> extract each output to variable~~ DONE
 # 6. Merge outputs from step 5 -> get demosaiced image
 # 7. Calculate root square difference of *original* image with demosaiced image -> get artifacts
 b_mask = createColourMask(img_rows, img_cols, BLUE)
@@ -63,13 +63,22 @@ b_mult = img_mosaic * b_mask
 g_mult = img_mosaic * g_mask
 r_mult = img_mosaic * r_mask
 
+nn_kernel = np.array([[0.25, 0.5, 0.25], [0.5, 1, 0.5], [0.25, 0.5, 0.25]])
+#g_kernel = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
+b_avg = cv2.filter2D(b_mult, -1, nn_kernel)
+g_avg = cv2.filter2D(g_mult, -1, nn_kernel)
+r_avg = np.clip(cv2.filter2D(r_mult, -1, nn_kernel), 0, 255)
+
+# r_avg = cv2.filter2D(r_mult, -1, nn_kernel)
 
 
 # # Difference between original and demosaiced images
 # diff = img - dst
 # cv2.imshow('diff', diff)
-
 cv2.imshow('img_mosaic', img_mosaic)
+cv2.imshow('b_avg', b_avg.astype(np.uint8))
+cv2.imshow('g_avg', g_avg.astype(np.uint8))
+cv2.imshow('r_avg', r_avg.astype(np.uint8))
 cv2.waitKey(0)
 cv2.destroyAllWindows()
