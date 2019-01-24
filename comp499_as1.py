@@ -7,7 +7,7 @@ import math
 # Get relative path
 dirname = os.path.dirname(__file__)
 imageSetDir = os.path.join(dirname, 'image_set')
-imageName = 'pencils'
+imageName = 'crayons'
 img_mosaic = cv2.imread(os.path.join(imageSetDir, imageName + '_mosaic.bmp'), cv2.IMREAD_GRAYSCALE)
 img_original = cv2.imread(os.path.join(imageSetDir, imageName + '.jpg'))
 img_rows = img_mosaic.shape[0]
@@ -76,15 +76,32 @@ r_avg = np.clip(cv2.filter2D(r_mult, -1, r_kernel), 0, 255)
 
 img_demosaic = mergeChannels(b_avg, g_avg, r_avg)
 
-cv2.imshow('img_mosaic', img_mosaic)
-cv2.imshow('img_original', img_original)
-cv2.imshow('img_demosaic', img_demosaic)
-
 # The root squared difference of the images will create artifacts
 # Because the demosaiced image is a reconstruction of the original image based on a mosaic image,
 # It is bound to not be 100% accurate
 # As such, information loss occurs and visual artifacts appear
+# In this method, artifacts appear as colour noise
 diff = imgRootSquaredDifference(img_original, img_demosaic)
+
+# General outputs
+cv2.imshow('img_mosaic', img_mosaic)
+cv2.imshow('img_original', img_original)
+# Part 1 specific outputs
+cv2.imshow('img_demosaic', img_demosaic)
 cv2.imshow('diff', diff)
+
+
+# Part 2
+gr_diff = g_avg - r_avg
+br_diff = b_avg - r_avg
+gr_median = np.clip(cv2.medianBlur(gr_diff, 3) + r_avg, 0, 255)
+br_median = np.clip(cv2.medianBlur(br_diff, 3) + r_avg, 0, 255)
+# The image produced by Freeman's method produces more jagged edges, but less prominent noise
+img_median = mergeChannels(br_median, gr_median, r_avg)
+diff2 = imgRootSquaredDifference(img_original, img_median)
+# Part 2 specific outputs
+cv2.imshow('img_median', img_median)
+cv2.imshow('diff2', diff2)
+
 cv2.waitKey(0)
 cv2.destroyAllWindows()
